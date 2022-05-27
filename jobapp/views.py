@@ -13,7 +13,26 @@ from account.models import User
 from jobapp.forms import *
 from jobapp.models import *
 from jobapp.permission import *
+
+
 User = get_user_model()
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+from django.shortcuts import HttpResponse
+
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
+def ajax_test(request):
+    if is_ajax(request=request):
+        message = "This is ajax"
+    else:
+        message = "Not ajax"
+    return HttpResponse(message)
 
 
 def home_view(request):
@@ -26,7 +45,7 @@ def home_view(request):
     page_number = request.GET.get('page',None)
     page_obj = paginator.get_page(page_number)
 
-    if request.is_ajax():
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         job_lists=[]
         job_objects_list = page_obj.object_list.values()
         for job_list in job_objects_list:
